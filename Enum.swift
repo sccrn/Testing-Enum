@@ -19,7 +19,7 @@ enum Product: String, CaseIterable {
 let products = Product.allCases
 
 func checkout(bag: [Product]) -> Double {
-    var filterBag = productsInArray(bag: bag)
+    let filterBag = productsInArray(bag: bag)
     var total: Double = 0
     for product in filterBag {
         switch product {
@@ -28,7 +28,8 @@ func checkout(bag: [Product]) -> Double {
                 let needsDiscount = quantity >= 2
                 //I'm using Ternary Conditional Operator, cause I prefer and the code seems more clean, I was nervous, 
                 //that's why I didn't putted it in this way before.
-                total += needsDiscount ? ((Double(quantity) * product.price()) * 0.2) :  product.price()
+                let discount = ((Double(quantity) * product.price()) * 0.2)
+                total += needsDiscount ? ((Double(quantity) * product.price()) - discount) :  product.price()
            case .peaches:
                 let quantity: Double  = Double(quantityOfProduct(bag: bag, product: product))
                 total += quantity * product.price()
@@ -36,7 +37,11 @@ func checkout(bag: [Product]) -> Double {
                 let quantity: Int = quantityOfProduct(bag: bag, product: product)
                 //I'm converting to Double after because in the next line, needs to be Int.
                 let bagsTotal = (Double(quantity) * product.price()/2)
-                total += quantity % 2 == 0 ? bagsTotal : (bagsTotal + product.price())
+                if quantity % 2 == 0 {
+                    total += bagsTotal
+                } else {
+                    total += quantity == 1 ? product.price() : (bagsTotal + product.price())
+                }
        }
     }
     return total
